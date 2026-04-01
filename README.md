@@ -357,7 +357,77 @@ f4e8197b5e8d   my-test   0.00%     1.801MiB / 15.67GiB   0.01%     1.13kB / 126B
 
 <img width="727" height="78" alt="Image" src="https://github.com/user-attachments/assets/1708154d-0826-45a6-baef-48a9eaf7b044" />
 
-- [ ] 기존 Dockerfile 기반 커스텀 이미지 제작
+- [x] 기존 Dockerfile 기반 커스텀 이미지 제작
+
+사용한 베이스 이미지 : nginx:alpine
+
+선택 이유 : 별도의 웹 서버 설치 과정이 필요 없어서 
+
+내가 적용한 커스텀 포인트 : index.html 정적 파일을 nginx 기본 경로에 복사하여 기본 페이지를 대체함 
+
+Dockerfile
+
+<img width="679" height="119" alt="Image" src="https://github.com/user-attachments/assets/450fe166-c029-4a5e-885c-dce09b6e431c" />
+
+
+index.html
+
+<img width="703" height="125" alt="Image" src="https://github.com/user-attachments/assets/80755a7d-2b5c-4186-aa05-9a2d4218f7c7" />
+
+```bash 
+username@c4r2s8 docker-mission % ls
+README.md	test
+username@c4r2s8 docker-mission % touch Dockerfile
+username@c4r2s8 docker-mission % touch test/index.html
+username@c4r2s8 docker-mission % nano test/index.html
+username@c4r2s8 docker-mission % nano Dockerfile 
+
+username@c4r2s8 docker-mission % ls
+Dockerfile	README.md	test
+username@c4r2s8 docker-mission % docker build -t test-image:v1 .
+[+] Building 7.6s (7/7) FINISHED                                                                        docker:orbstack
+ => [internal] load build definition from Dockerfile                                                               0.2s
+ => => transferring dockerfile: 87B                                                                                0.0s
+ => [internal] load metadata for docker.io/library/nginx:alpine                                                    2.8s
+ => [internal] load .dockerignore                                                                                  0.1s
+ => => transferring context: 2B                                                                                    0.0s
+ => [internal] load build context                                                                                  0.2s
+ => => transferring context: 169B                                                                                  0.0s
+ => [1/2] FROM docker.io/library/nginx:alpine@sha256:e7257f1ef28ba17cf7c248cb8ccf6f0c6e0228ab9c315c152f9c203cd34c  3.7s
+ => => resolve docker.io/library/nginx:alpine@sha256:e7257f1ef28ba17cf7c248cb8ccf6f0c6e0228ab9c315c152f9c203cd34c  0.2s
+ => => sha256:e7257f1ef28ba17cf7c248cb8ccf6f0c6e0228ab9c315c152f9c203cd34cf6d1 10.33kB / 10.33kB                   0.0s
+ => => sha256:7e89aa6cabfc80f566b1b77b981f4bb98413bd2d513ca9a30f63fe58b4af6903 2.50kB / 2.50kB                     0.0s
+ => => sha256:d5030d429039a823bef4164df2fad7a0defb8d00c98c1136aec06701871197c2 12.32kB / 12.32kB                   0.0s
+ => => sha256:589002ba0eaed121a1dbf42f6648f29e5be55d5c8a6ee0f8eaa0285cc21ac153 3.86MB / 3.86MB                     0.5s
+ => => sha256:8892f80f46a05d59a4cde3bcbb1dd26ed2441d4214870a4a7b318eaa476a0a54 1.87MB / 1.87MB                     0.8s
+ => => sha256:91d1c9c22f2c631288354fadb2decc448ce151d7a197c167b206588e09dcd50a 626B / 626B                         0.9s
+ => => extracting sha256:589002ba0eaed121a1dbf42f6648f29e5be55d5c8a6ee0f8eaa0285cc21ac153                          0.1s
+ => => sha256:cf1159c696ee2a72b85634360dbada071db61bceaad253db7fda65c45a58414c 953B / 953B                         1.0s
+ => => extracting sha256:8892f80f46a05d59a4cde3bcbb1dd26ed2441d4214870a4a7b318eaa476a0a54                          0.1s
+ => => sha256:3f4ad4352d4f91018e2b4910b9db24c08e70192c3b75d0d6fff0120c838aa0bb 402B / 402B                         1.3s
+ => => extracting sha256:91d1c9c22f2c631288354fadb2decc448ce151d7a197c167b206588e09dcd50a                          0.0s
+ => => sha256:c2bd5ab177271dd59f19a46c214b1327f5c428cd075437ec0155ae71d0cdadc1 1.21kB / 1.21kB                     1.4s
+ => => extracting sha256:cf1159c696ee2a72b85634360dbada071db61bceaad253db7fda65c45a58414c                          0.0s
+ => => sha256:4d9d41f3822d171ccc5f2cdfd75ad846ac4c7ed1cd36fb998fe2c0ce4501647b 1.40kB / 1.40kB                     1.6s
+ => => extracting sha256:3f4ad4352d4f91018e2b4910b9db24c08e70192c3b75d0d6fff0120c838aa0bb                          0.0s
+ => => sha256:3370263bc02adcf5c4f51831d2bf1d54dbf9a6a80b0bf32c5c9b9400630eaa08 20.25MB / 20.25MB                   2.0s
+ => => extracting sha256:c2bd5ab177271dd59f19a46c214b1327f5c428cd075437ec0155ae71d0cdadc1                          0.0s
+ => => extracting sha256:4d9d41f3822d171ccc5f2cdfd75ad846ac4c7ed1cd36fb998fe2c0ce4501647b                          0.0s
+ => => extracting sha256:3370263bc02adcf5c4f51831d2bf1d54dbf9a6a80b0bf32c5c9b9400630eaa08                          0.4s
+ => [2/2] COPY test /usr/share/nginx/html                                                                          0.2s
+ => exporting to image                                                                                             0.2s
+ => => exporting layers                                                                                            0.1s
+ => => writing image sha256:d65086d4cc339246f5ed77567ab64fcb5a8aad91d344eedba9508f15d73c0008                       0.0s
+ => => naming to docker.io/library/test-image:v1                                                                   0.0s
+username@c4r2s8 docker-mission % docker images
+REPOSITORY    TAG       IMAGE ID       CREATED              SIZE
+test-image    v1        d65086d4cc33   About a minute ago   62.2MB
+hello-world   latest    e2ac70e7319a   8 days ago           10.1kB
+ubuntu        latest    f794f40ddfff   5 weeks ago          78.1MB
+```
+
+<img width="1287" height="972" alt="Image" src="https://github.com/user-attachments/assets/f9be1540-6d47-4df7-b8a4-63fd9f32a0ce" />
+
 - [ ] 포트 매핑
 - [ ] 바인드 마운트 반영
 - [ ] Docker 볼륨 영속성 검증
