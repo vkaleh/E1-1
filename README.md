@@ -181,11 +181,11 @@ WARNING: DOCKER_INSECURE_NO_IPTABLES_RAW is set
 
 <img width="529" height="574" alt="Image" src="https://github.com/user-attachments/assets/9b80d897-2170-4f76-9d95-8c91080a53e9" />
 
-- [ ] 컨테이너 실행 실습
+- [x] 컨테이너 실행 실습
 
 hello-world 실행 
 ```bash
-username@c4r2s8 docker-mission % docker run hello-world                         # hello-world 이미지가 없으면 Docker Hub에서 다운로드 
+username@c4r2s8 docker-mission % docker run hello-world             # hello-world 이미지가 없으면 Docker Hub에서 다운로드
 Unable to find image 'hello-world:latest' locally
 latest: Pulling from library/hello-world
 4f55086f7dd0: Pull complete 
@@ -214,11 +214,14 @@ For more examples and ideas, visit:
  https://docs.docker.com/get-started/
 ```
 
+<img width="568" height="412" alt="Image" src="https://github.com/user-attachments/assets/6f8565b9-f418-40d1-8ae8-5f77d7008054" />
+
+
 ubuntu 컨테이너 실행 후 내부 진입
 
 ```bash 
-username@c4r2s8 docker-mission % docker run -it ubuntu bash                     # 내 컴퓨터 안에 리눅스 운영체제를 하나 더 띄움 
-Unable to find image 'ubuntu:latest' locally                                    # -i (표준입력 활성화), -t (화면에 입출력을 보여줌)
+username@c4r2s8 docker-mission % docker run -it ubuntu bash        # 내 컴퓨터 안에 리눅스 운영체제를 하나 더 띄움 
+Unable to find image 'ubuntu:latest' locally                       # -i (표준입력 활성화), -t (화면에 입출력을 보여줌)
 latest: Pulling from library/ubuntu
 817807f3c64e: Pull complete 
 Digest: sha256:186072bba1b2f436cbb91ef2567abca677337cfc786c86e107d25b7072feef0c
@@ -230,6 +233,10 @@ root@c7c94027e58a:/# echo hello
 hello
 ```
 
+<img width="569" height="189" alt="Image" src="https://github.com/user-attachments/assets/28b25b49-0814-4196-811d-8b63ad5d1007" />
+
+</br>
+
 컨테이너 종료/유지 차이 
 
 ```bash
@@ -237,7 +244,7 @@ root@c7c94027e58a:/# exit
 exit
 
 # 컨테이너를 뒤에서 실행
-username@c4r2s8 docker-mission % docker run -itd --name my-test ubuntu bash     # -d (detach) : 실행은 되지만 내 화면에 바로 나타나지 않고 뒤에서 돌도록 
+username@c4r2s8 docker-mission % docker run -itd --name my-test ubuntu bash     # -d (detach) 
 f4e8197b5e8d856e9d81befb8e20b0d88ca77cbbe677dd91ce5cff7e6982ae95
 
 # 현재 실행 중인 컨테이너 확인
@@ -254,7 +261,7 @@ root@f4e8197b5e8d:/# exit
 exit
 
 # attach는 컨테이너의 메인 프로세스에 직접 붙는 거라, 내가 나오면 컨테이너도 같이 죽음 
-username@c4r2s8 docker-mission % docker ps                                      # 실행 중인 목록에 my-test 없음 
+username@c4r2s8 docker-mission % docker ps                         # 실행 중인 목록에 my-test 없음 
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 
 username@c4r2s8 docker-mission % docker start my-test
@@ -272,19 +279,83 @@ root@f4e8197b5e8d:/# exit
 exit
 
 # exec로 띄운 프로세스만 종료되었으므로, 컨테이너 본체는 여전히 살아있음
-username@c4r2s8 docker-mission % docker ps                                      # 종료해서 나왔는데도 my-test 컨테이너가 살아 있음 
+username@c4r2s8 docker-mission % docker ps                         # 종료해서 나왔는데도 my-test 컨테이너가 살아 있음 
 CONTAINER ID   IMAGE     COMMAND   CREATED              STATUS          PORTS     NAMES
 f4e8197b5e8d   ubuntu    "bash"    About a minute ago   Up 28 seconds             my-test
 ```
 
 attach vs exec 차이점
 
-attach: 실행 중인 컨테이너에 접속. exit 시 컨테이너도 함께 종료됨
-exec: 실행 중인 컨테이너에 새로운 프로세스를 실행. exit 해도 컨테이너는 계속 실행됨
+- attach: 실행 중인 컨테이너에 접속. exit 시 컨테이너도 함께 종료됨
+- exec: 실행 중인 컨테이너에 새로운 프로세스를 실행. exit 해도 컨테이너는 계속 실행됨
 
-- [ ] Docker 기본 운영 명령 수행
+<img width="639" height="410" alt="Image" src="https://github.com/user-attachments/assets/e5955b0f-0cf8-490a-8328-4638537751d9" />
+
+- [x] Docker 기본 운영 명령 수행
+이미지: 다운로드/목록 확인
+
+```bash
+username@c4r2s8 docker-mission % docker images
+REPOSITORY    TAG       IMAGE ID       CREATED       SIZE
+hello-world   latest    e2ac70e7319a   8 days ago    10.1kB
+ubuntu        latest    f794f40ddfff   5 weeks ago   78.1MB
+```
+
+컨테이너 실행/중지/목록 확인 
+
+```bash
+# -all (가동 중, 멈춘 컨테이너를 모두 다 보여줌)
+username@c4r2s8 docker-mission % docker ps -a
+CONTAINER ID   IMAGE         COMMAND    CREATED       STATUS                     PORTS     NAMES
+f4e8197b5e8d   ubuntu        "bash"     3 hours ago   Up 3 hours                           my-test
+c7c94027e58a   ubuntu        "bash"     3 hours ago   Exited (127) 3 hours ago             nostalgic_euclid
+25119f6689f7   hello-world   "/hello"   3 hours ago   Exited (0) 2 hours ago               youthful_heisenberg
+
+username@c4r2s8 docker-mission % docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED       STATUS       PORTS     NAMES
+f4e8197b5e8d   ubuntu    "bash"    3 hours ago   Up 3 hours             my-test
+
+# 컨테이너 중지 
+username@c4r2s8 docker-mission % docker stop my-test 
+my-test
+
+username@c4r2s8 docker-mission % docker ps -a        
+CONTAINER ID   IMAGE         COMMAND    CREATED       STATUS                       PORTS     NAMES
+f4e8197b5e8d   ubuntu        "bash"     3 hours ago   Exited (137) 7 seconds ago             my-test
+c7c94027e58a   ubuntu        "bash"     3 hours ago   Exited (127) 3 hours ago               nostalgic_euclid
+25119f6689f7   hello-world   "/hello"   3 hours ago   Exited (0) 3 hours ago                 youthful_heisenberg
+```
+
+<img width="788" height="111" alt="Image" src="https://github.com/user-attachments/assets/0520eebd-720a-45a5-88ca-1494121c9beb" />
+<img width="798" height="98" alt="Image" src="https://github.com/user-attachments/assets/ca91c639-84b3-41dc-9275-a885af4adb41" />
 
 
+운영: 로그 확인, 리소스 확인 
+
+로그 확인
+
+```bash
+username@c4r2s8 docker-mission % docker logs my-test
+root@f4e8197b5e8d:/# ls
+bin   dev  home  lib64  mnt  proc  run   srv  tmp  var
+boot  etc  lib   media  opt  root  sbin  sys  usr
+root@f4e8197b5e8d:/# exit
+exit
+root@f4e8197b5e8d:/# %   
+```
+
+<img width="435" height="103" alt="Image" src="https://github.com/user-attachments/assets/d163c341-9d52-4831-8c76-a552790a596f" />
+
+리소스 확인
+```bash
+# my-test 실행 중
+$ docker stats 
+
+CONTAINER ID   NAME      CPU %     MEM USAGE / LIMIT     MEM %     NET I/O         BLOCK I/O     PIDS 
+f4e8197b5e8d   my-test   0.00%     1.801MiB / 15.67GiB   0.01%     1.13kB / 126B   4.45MB / 0B   1 
+```
+
+<img width="727" height="78" alt="Image" src="https://github.com/user-attachments/assets/1708154d-0826-45a6-baef-48a9eaf7b044" />
 
 - [ ] 기존 Dockerfile 기반 커스텀 이미지 제작
 - [ ] 포트 매핑
@@ -316,4 +387,12 @@ exec: 실행 중인 컨테이너에 새로운 프로세스를 실행. exit 해�
 도커면 도커지.. 도대체 What is 도커 데몬?
 docker run ... 을 쳤을 때, 명령어를 실행하는 건 터미널이 아니라, 뒤에서 대기하고 있던 도커 데몬(이미지를 찾아서 컨테이너에 띄우는 역할을 수행)임
 
+4-3. docker images
+| 컬럼 | 설명 | 예시 |
+|:---:|:---:|:---:|
+| **REPOSITORY** | 이미지의 이름 | hello-world, ubuntu |
+| **TAG** | 이미지의 버전/태그 | latest (최신 버전) |
+| **IMAGE ID** | 이미지의 고유 ID | e2ac70e7319a |
+| **CREATED** | 이미지 생성 시간 | 8 days ago |
+| **SIZE** | 이미지 용량 | 10.1kB |
 
