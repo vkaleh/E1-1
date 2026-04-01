@@ -76,7 +76,7 @@ username@c4r2s8 docker-mission % docker --version
 Docker version 28.5.2, build ecc6942
 ```
 
-<img width="1060" height="58" alt="image" src="https://github.com/user-attachments/assets/dc254222-d8ec-4eb4-88a6-ae7a655801b7" />
+<img width="420" height="30" alt="Image" src="https://github.com/user-attachments/assets/3b2c2799-4222-4ed8-bcd6-e5fc97d26361" />
 
 
 ```bash
@@ -179,10 +179,113 @@ Server:
 WARNING: DOCKER_INSECURE_NO_IPTABLES_RAW is set
 ```
 
-<img width="1057" height="1148" alt="Image" src="https://github.com/user-attachments/assets/0147c951-71bd-4ae9-8e01-907ff16c6edb" />
+<img width="529" height="574" alt="Image" src="https://github.com/user-attachments/assets/9b80d897-2170-4f76-9d95-8c91080a53e9" />
+
+- [ ] 컨테이너 실행 실습
+
+hello-world 실행 
+```bash
+username@c4r2s8 docker-mission % docker run hello-world                         # hello-world 이미지가 없으면 Docker Hub에서 다운로드 
+Unable to find image 'hello-world:latest' locally
+latest: Pulling from library/hello-world
+4f55086f7dd0: Pull complete 
+Digest: sha256:452a468a4bf985040037cb6d5392410206e47db9bf5b7278d281f94d1c2d0931
+Status: Downloaded newer image for hello-world:latest
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:
+ 1. The Docker client contacted the Docker daemon.
+ 2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+    (amd64)
+ 3. The Docker daemon created a new container from that image which runs the
+    executable that produces the output you are currently reading.
+ 4. The Docker daemon streamed that output to the Docker client, which sent it
+    to your terminal.
+
+To try something more ambitious, you can run an Ubuntu container with:
+ $ docker run -it ubuntu bash
+
+Share images, automate workflows, and more with a free Docker ID:
+ https://hub.docker.com/
+
+For more examples and ideas, visit:
+ https://docs.docker.com/get-started/
+```
+
+ubuntu 컨테이너 실행 후 내부 진입
+
+```bash 
+username@c4r2s8 docker-mission % docker run -it ubuntu bash                     # 내 컴퓨터 안에 리눅스 운영체제를 하나 더 띄움 
+Unable to find image 'ubuntu:latest' locally                                    # -i (표준입력 활성화), -t (화면에 입출력을 보여줌)
+latest: Pulling from library/ubuntu
+817807f3c64e: Pull complete 
+Digest: sha256:186072bba1b2f436cbb91ef2567abca677337cfc786c86e107d25b7072feef0c
+Status: Downloaded newer image for ubuntu:latest
+root@c7c94027e58a:/# ls
+bin   dev  home  lib64  mnt  proc  run   srv  tmp  var
+boot  etc  lib   media  opt  root  sbin  sys  usr
+root@c7c94027e58a:/# echo hello
+hello
+```
+
+컨테이너 종료/유지 차이 
+
+```bash
+root@c7c94027e58a:/# exit
+exit
+
+# 컨테이너를 뒤에서 실행
+username@c4r2s8 docker-mission % docker run -itd --name my-test ubuntu bash     # -d (detach) : 실행은 되지만 내 화면에 바로 나타나지 않고 뒤에서 돌도록 
+f4e8197b5e8d856e9d81befb8e20b0d88ca77cbbe677dd91ce5cff7e6982ae95
+
+# 현재 실행 중인 컨테이너 확인
+username@c4r2s8 docker-mission % docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED         STATUS         PORTS     NAMES
+f4e8197b5e8d   ubuntu    "bash"    9 seconds ago   Up 9 seconds             my-test
+
+# attach 실습: 실행 중인 컨테이너의 메인 프로세스(bash)에 직접 연결
+username@c4r2s8 docker-mission % docker attach my-test
+root@f4e8197b5e8d:/# ls
+bin   dev  home  lib64  mnt  proc  run   srv  tmp  var
+boot  etc  lib   media  opt  root  sbin  sys  usr
+root@f4e8197b5e8d:/# exit
+exit
+
+# attach는 컨테이너의 메인 프로세스에 직접 붙는 거라, 내가 나오면 컨테이너도 같이 죽음 
+username@c4r2s8 docker-mission % docker ps                                      # 실행 중인 목록에 my-test 없음 
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+username@c4r2s8 docker-mission % docker start my-test
+my-test
+username@c4r2s8 docker-mission % docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED              STATUS         PORTS     NAMES
+f4e8197b5e8d   ubuntu    "bash"    About a minute ago   Up 4 seconds             my-test
+
+# exec 실습: 실행 중인 컨테이너에 별도의 새로운 bash 프로세스를 실행하여 접속 
+username@c4r2s8 docker-mission % docker exec -it my-test bash
+root@f4e8197b5e8d:/# ls
+bin   dev  home  lib64  mnt  proc  run   srv  tmp  var
+boot  etc  lib   media  opt  root  sbin  sys  usr
+root@f4e8197b5e8d:/# exit
+exit
+
+# exec로 띄운 프로세스만 종료되었으므로, 컨테이너 본체는 여전히 살아있음
+username@c4r2s8 docker-mission % docker ps                                      # 종료해서 나왔는데도 my-test 컨테이너가 살아 있음 
+CONTAINER ID   IMAGE     COMMAND   CREATED              STATUS          PORTS     NAMES
+f4e8197b5e8d   ubuntu    "bash"    About a minute ago   Up 28 seconds             my-test
+```
+
+attach vs exec 차이점
+
+attach: 실행 중인 컨테이너에 접속. exit 시 컨테이너도 함께 종료됨
+exec: 실행 중인 컨테이너에 새로운 프로세스를 실행. exit 해도 컨테이너는 계속 실행됨
 
 - [ ] Docker 기본 운영 명령 수행
-- [ ] 컨테이너 실행 실습
+
+
+
 - [ ] 기존 Dockerfile 기반 커스텀 이미지 제작
 - [ ] 포트 매핑
 - [ ] 바인드 마운트 반영
@@ -208,4 +311,9 @@ WARNING: DOCKER_INSECURE_NO_IPTABLES_RAW is set
 | r (read) | 파일의 내용을 읽기 (cat, vi 등) | 디렉토리 내부의 파일 목록 보기 (ls) |
 | w (write)	| 파일의 내용을 수정	| 파일/디렉토리 생성, 삭제, 이름 변경 |
 | x (execute) |	파일을 프로그램으로 실행 | 디렉토리 내부로 진입 (cd) |
+
+4-2. 도커 데몬
+도커면 도커지.. 도대체 What is 도커 데몬?
+docker run ... 을 쳤을 때, 명령어를 실행하는 건 터미널이 아니라, 뒤에서 대기하고 있던 도커 데몬(이미지를 찾아서 컨테이너에 띄우는 역할을 수행)임
+
 
