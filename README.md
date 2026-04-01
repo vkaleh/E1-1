@@ -28,7 +28,7 @@ test.txt
 ```
 
 </br>
-<img width="561" height="311" alt="Image" src="https://github.com/user-attachments/assets/27139d10-5684-4e49-a532-85b7e6d44d7e" />
+<img width="561" height="311" alt="Image" src="https://github.com/user-attachments/assets/fc1718e3-8143-45c0-bda7-3edfd2406c3d" />
 </br>
 
 - [x] 권한 변경 실습
