@@ -1,9 +1,13 @@
 # AI/SW 워크스테이션 구축
 
 ## 1. 프로젝트 개요
+Docker를 활용하여 컨테이너 기반 개발 워크스테이션을 구축하고, 이미지 생성, 컨테이너 실행, 포트 매핑, 볼륨을 통해 동일한 실행 환경을 재현하는 방법을 학습한다.
 
 ## 2. 실행 환경
--OS :
+- OS : macOS
+- 쉘 : zsh
+- Docker 버전 : 28.5.2
+- Git 버전 : 2.53.0
 
 ## 3. 수행 체크리스트
 - [x] 터미널 기본 조작 및 폴더 구성
@@ -428,8 +432,23 @@ ubuntu        latest    f794f40ddfff   5 weeks ago          78.1MB
 
 <img width="1287" height="972" alt="Image" src="https://github.com/user-attachments/assets/f9be1540-6d47-4df7-b8a4-63fd9f32a0ce" />
 
-- [ ] 포트 매핑
-- [ ] 바인드 마운트 반영
+- [x] 포트 매핑
+
+[포트 매핑 접속 증거](#5-1-웹-페이지-한글-깨짐)
+
+- [x] 바인드 마운트 반영
+
+<변경 전>
+
+<img width="1040" height="392" alt="Screenshot 2026-04-02 at 10 31 32 AM" src="https://github.com/user-attachments/assets/91c0d077-54a2-4ada-8de6-d33ba2110af0" />
+
+<변경 후>
+
+<img width="846" height="403" alt="Screenshot 2026-04-02 at 10 32 56 AM" src="https://github.com/user-attachments/assets/ebb4cafe-0fad-4bbd-9b1a-d55f29599e28" />
+
+바인드 마운트로 호스트의 test 폴더와 컨테이너의 nginx 웹 경로를 연결
+-> index.html 수정 후 별도의 이미지 빌드나 재시작 없이도, 브라우저 새로고침만 하면 변경 사항이 반영됨 
+
 - [ ] Docker 볼륨 영속성 검증
 - [ ] Git 설정 및 GitHub 연동
 
