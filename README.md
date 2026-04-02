@@ -466,3 +466,45 @@ docker run ... 을 쳤을 때, 명령어를 실행하는 건 터미널이 아니
 | **CREATED** | 이미지 생성 시간 | 8 days ago |
 | **SIZE** | 이미지 용량 | 10.1kB |
 
+## 5. 트러블슈팅 해결 
+### 5-1. 웹 페이지 한글 깨짐 
+#### - 문제 상황
+index.html 파일에 한글을 작성한 후 http://localhost:8080으로 접속했을 때 한글이 깨진 문자로 표시되었음
+
+#### - 원인 가설 1
+브라우저 문자 인코딩이 UTF-8로 설정되지 않아 발생한 문제로 판단함
+
+#### - 확인 과정 1
+index.html에 따로 문자 인코딩을 해주는 부분이 없음
+
+#### - 해결 시도 1
+index.html 파일의 <head> 태그 내부에 <meta charset="UTF-8"> 를 추가함 
+
+<변경 전>
+
+<img width="485" height="113" alt="Screenshot 2026-04-02 at 8 58 33 AM" src="https://github.com/user-attachments/assets/6eea1316-d74d-4c39-bdd1-d98beb1e6460" />
+
+<변경 후>
+
+<img width="533" height="221" alt="Screenshot 2026-04-02 at 9 08 35 AM" src="https://github.com/user-attachments/assets/57b33c89-47fe-4979-80e6-9cec8f456536" />
+
+docker start my-web 실행 
+
+#### - 결과
+그러나 한글 깨짐 현상이 여전히 해결되지 않았음
+
+<img width="986" height="454" alt="Screenshot 2026-04-02 at 9 19 52 AM" src="https://github.com/user-attachments/assets/17fdb930-d967-41af-835e-64ee7d693ad1" />
+
+
+#### - 원인 가설 2
+실행 중인 컨테이너는 수정 전의 index.html을 품고 있는 예전 이미지로 만들어진 상태라서, 수정된 html이 반영되지 않은 것으로 판단함
+
+#### - 확인 과정 2
+docker images로 이미지 생성 시간을 확하였는데 예전 시간 그대로였음 
+
+#### - 해결 방법
+컨테이너를 삭제한 후 이미지를 다시 빌드하고 컨테이너를 실행함
+
+<img width="1056" height="631" alt="Screenshot 2026-04-02 at 9 29 53 AM" src="https://github.com/user-attachments/assets/c818a21f-8a45-42b3-81c6-7d4ccf9b5491" />
+
+
