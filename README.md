@@ -39,6 +39,7 @@ Git 설정, GitHub 연동 방법 (history로 대체 )
 
 확인 
 
+<img width="825" height="484" alt="Screenshot 2026-04-02 at 11 39 36 AM" src="https://github.com/user-attachments/assets/8e02dffd-2d87-487c-af35-d516a1ae131d" />
 
 
 ```bash
@@ -523,8 +524,32 @@ username@c4r2s8 docker-mission % nano test/index.html
 바인드 마운트로 호스트의 test 폴더와 컨테이너의 nginx 웹 경로를 연결
 -> index.html 수정 후 별도의 이미지 빌드나 재시작 없이도, 브라우저 새로고침만 하면 변경 사항이 반영됨 
 
-- [ ] Docker 볼륨 영속성 검증
+- [x] <span id="volume-test">Docker 볼륨 영속성 검증</span>
 
+```bash
+# 현재 생성되어 있는 볼륨 없음 
+username@c4r2s8 docker-mission % docker volume ls
+DRIVER    VOLUME NAME
+username@c4r2s8 docker-mission % docker volume create my-volume            # 볼륨 생성 
+my-volume
+
+# 컨테이너 실행 (볼륨 연결)
+username@c4r2s8 docker-mission % docker run -d -p 8081:80 -v my-volume:/usr/share/nginx/html --name test-volume nginx   
+61e55126cb112da59192eeb3036ffbb36c91617afea880e3327710ea6b25aaff
+
+# 컨테이너 안에 파일 생성 
+username@c4r2s8 docker-mission % docker exec test-volume sh -c "echo 'hello volume' > /usr/share/nginx/html/index.html"
+
+# 컨테이너 삭제 
+username@c4r2s8 docker-mission % docker rm -f test-volume
+test-volume
+
+# 새로운 컨테이너 실행 (같은 볼륨 연결)
+username@c4r2s8 docker-mission % docker run -d -p 8081:80 -v my-volume:/usr/share/nginx/html --name test-volume2 nginx
+a56ebea60d55642e1d390a4d49d7f9c6893ae1ec25e1241805e330d04a6d1baf
+```
+
+<img width="743" height="276" alt="Screenshot 2026-04-02 at 1 16 54 PM" src="https://github.com/user-attachments/assets/17202b85-a91e-40f4-b429-e2d1a49ed2fc" />
 
 ## 4. 학습한 내용 
 4-1. 리눅스 파일 권한
@@ -558,6 +583,19 @@ docker run ... 을 쳤을 때, 명령어를 실행하는 건 터미널이 아니
 | **IMAGE ID** | 이미지의 고유 ID | e2ac70e7319a |
 | **CREATED** | 이미지 생성 시간 | 8 days ago |
 | **SIZE** | 이미지 용량 | 10.1kB |
+
+4-4. 볼륨 영속성
+컨테이너가 삭제되어도 데이터가 살아있게 만드는 것
+
+| 구분 | 볼륨 | 바인드 마운트 |
+|:---:|:---:|:---:|
+| **위치** | Docker가 관리 | 내 로컬 디렉토리 |
+| **사용 목적** | 데이터 영속성 | 개발 편의성 |
+| **개념** | Docker 전용 저장소 | 내 폴더를 연결 |
+
+- Docker 컨테이너는 기본적으로 일회용
+- 컨테이너 삭제하면 내부 데이터도 같이 날아가기 때문에 데이터를 따로 저장하는 공간인 Volume이 필요
+- (컨테이너와 데이터 저장소를 분리)
 
 ## 5. 트러블슈팅 해결 
 ### 5-1. 웹 페이지 한글 깨짐 
@@ -650,4 +688,46 @@ a8703d4da0c44175bcfaa9f411a3b485daa0de8ff463f9fdac8d6aad9eff9f47
 
 <img width="1056" height="631" alt="Screenshot 2026-04-02 at 9 29 53 AM" src="https://github.com/user-attachments/assets/c818a21f-8a45-42b3-81c6-7d4ccf9b5491" />
 
+### 5-2. 포트 충돌로 인한 컨테이너 실행 실패
 
+```bash 
+username@c4r2s8 docker-mission % docker run -d -p 8080:80 -v my-volume:/usr/share/nginx/html --name test-container nginx
+Unable to find image 'nginx:latest' locally
+latest: Pulling from library/nginx
+ec781dee3f47: Pull complete 
+bb3d0aa29654: Pull complete 
+510ddf6557d6: Pull complete 
+cde7a05ae428: Pull complete 
+587e3d84dbb5: Pull complete 
+3189680c601f: Pull complete 
+5e815e07e569: Pull complete 
+Digest: sha256:7150b3a39203cb5bee612ff4a9d18774f8c7caf6399d6e8985e97e28eb751c18
+Status: Downloaded newer image for nginx:latest
+90213b89a0cfdc20fd5b27f530a47994dbcd04dee84ac7db32a8492c2604a29e
+docker: Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint test-container (bbe0d2ff64ccdb3fafec89103a813396a1c8423914033fc1f8abb483de1b0ba7): Bind for 0.0.0.0:8080 failed: port is already allocated
+
+Run 'docker run --help' for more information
+
+username@c4r2s8 docker-mission % docker exec test-container sh -c "echo 'hello volume' > /usr/share/nginx/html/index.html"
+Error response from daemon: container 90213b89a0cfdc20fd5b27f530a47994dbcd04dee84ac7db32a8492c2604a29e is not running
+username@c4r2s8 docker-mission % docker run -d -p 8081:80 -v my-volume:/usr/share/nginx/html --name test-container nginx
+docker: Error response from daemon: Conflict. The container name "/test-container" is already in use by container "90213b89a0cfdc20fd5b27f530a47994dbcd04dee84ac7db32a8492c2604a29e". You have to remove (or rename) that container to be able to reuse that name.
+
+Run 'docker run --help' for more information
+```
+
+#### - 문제 상황
+컨테이너 실행에 실패하고, 컨테이너 내부에 파일을 생성하려고 해도 오류가 뜸 
+
+#### - 원인 가설
+이미 다른 컨테이너가 호스트의 8080 포트를 사용 중이어서 포트 바인딩에 실패하고, 실행 중이지 않은 컨테이너 내부에 파일을 생성하려고 해서 실패했을 것이라고 판단함 
+
+#### - 확인 과정 
+docker ps로 8080 포트를 사용 중인 기존 컨테이너 확인 
+
+<img width="560" height="73" alt="Screenshot 2026-04-02 at 1 27 40 PM" src="https://github.com/user-attachments/assets/de59d986-039e-4926-b328-be7feab2fb9d" />
+
+#### - 해결 방법 
+다른 포트로 컨테이너 실행함 
+
+[결과 화면](#volume-test)
