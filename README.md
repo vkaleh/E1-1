@@ -579,6 +579,8 @@ ubuntu        latest    f794f40ddfff   5 weeks ago          78.1MB
 ```bash
 username@c4r2s8 docker-mission % docker rm -f web-test               # 기존 컨테이너 삭제 
 web-test
+
+# -v 호스트 경로 : 컨테이너 내부 경로 (컨테이너 내부에서 해당 폴더나 파일이 위치하게 될 경로)
 username@c4r2s8 docker-mission % docker run -d -p 8080:80 -v $(pwd)/test:/usr/share/nginx/html --name web-bind nginx:alpine
 Unable to find image 'nginx:alpine' locally
 alpine: Pulling from library/nginx
